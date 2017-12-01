@@ -10,28 +10,28 @@ import sqlite3
 
 #FacebookAPI
 
-def __init__(self):
-        self.fb_url = 'https://developers.facebook.com/tools/debug/og/object'
+# def __init__(self):
+#         self.fb_url = 'https://developers.facebook.com/tools/debug/og/object'
 
-def pretty(obj):
-    return json.dumps(obj, sort_keys=True, indent=2)
+# def pretty(obj):
+#     return json.dumps(obj, sort_keys=True, indent=2)
 
-class Post():
-    def __init__(self, post_dict={}):
-    	if 'message' in post_dict:
-    		self.message = post_dict['message']
-    	else:
-    		self.message = ""
-    	if 'comments' in post_dict:
-    		self.comments = post_dict['comments']['data']
-    	else:
-    		self.comments = []
-    	if 'likes' in post_dict:
-    		self.likes = post_dict['likes']['data']
-    	else:
-    		self.likes = []
+# class Post():
+#     def __init__(self, post_dict={}):
+#     	if 'message' in post_dict:
+#     		self.message = post_dict['message']
+#     	else:
+#     		self.message = ""
+#     	if 'comments' in post_dict:
+#     		self.comments = post_dict['comments']['data']
+#     	else:
+#     		self.comments = []
+#     	if 'likes' in post_dict:
+#     		self.likes = post_dict['likes']['data']
+#     	else:
+#     		self.likes = []
 
-fb_access_token = "EAACEdEose0cBAIitrLs6ZCkd3tsaHZCHQCHHoZCfoWL1VGZAgo2Ns6Xxndeos8UxWXsZA2EScVhebPVMxZAzZBg80x9zXQUmZAKYQOmTHu3PPpNMZCbDZC1347utqtGSim1p4f2fnPbcBcYdm3FsW92vh3wEIqfvjI75SJp6DnlsbcQAB8lU3fENdzGYUjt5UXFs0ZD"
+fb_access_token = "xxxxx"
 if fb_access_token == None:
     fb_access_token = raw_input("\nCopy and paste token from https://developers.facebook.com/tools/explorer\n>  ")
 
@@ -68,16 +68,16 @@ except:
 
 print ('----------------------------------------2')
 
-def get_user_fbposts(name):
-    instaparams={"access_token":fb_access_token}
+def get_user_fbposts(username):
+    fbparams={"access_token":fb_access_token}
     baseurl= "https://graph.facebook.com/v2.3/me/feed"
-    if name in CACHE_DICTION:
+    if username in CACHE_DICTION:
         print ('using cached data')
-        fb_results= CACHE_DICTION[name]
+        fb_results= CACHE_DICTION[username]
     else:
         print ('getting data from the internet')
-        fb_results=requests.get(baseurl,params=instaparams)
-        CACHE_DICTION[name]=fb_results.text
+        fb_results=requests.get(baseurl,params=fbparams)
+        CACHE_DICTION[username]=fb_results.text
         f=open(CACHE_FNAME,"w")
         f.write(json.dumps(CACHE_DICTION))
         f.close()
@@ -88,7 +88,7 @@ print ('----------------------------------------3')
 
 #InstagramAPI
 
-insta_access_token = "213962356.1677ed0.4c721dc52c6946458137aeb2bec48b57"
+insta_access_token = "xxxxxx"
 
 CACHE_FNAME = "insta.json" 
 try:
@@ -102,20 +102,22 @@ except:
 
 print ('----------------------------------------4')
 
-def get_user_instaposts(name):
+def get_user_instaposts(username):
     instaparams={"access_token":insta_access_token}
     baseurl="https://api.instagram.com/v1/users/self/media/recent/"
-    if name in CACHE_DICTION:
+    if username in CACHE_DICTION:
         print ('using cached data')
-        insta_results= CACHE_DICTION[name]
+        insta_results= CACHE_DICTION[username]
     else:
         print ('getting data from the internet')
         insta_results=requests.get(baseurl,params=instaparams)
-        CACHE_DICTION[name]=insta_results.text
+        CACHE_DICTION[username]=insta_results.text
         f=open(CACHE_FNAME,"w")
         f.write(json.dumps(CACHE_DICTION))
         f.close()
     return insta_results
 
 insta_post = get_user_instaposts("madiwilly10")
+
+
 print ('----------------------------------------5')

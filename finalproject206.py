@@ -31,7 +31,7 @@ import sqlite3
 #     	else:
 #     		self.likes = []
 
-fb_access_token = "xxxxx"
+fb_access_token = "EAACEdEose0cBANz89meS1OgSMp3B7CmF6ZBjNdodpZB8Dv5YTR4O0ZCMJaScfZBp4XDAr1qdxgdnZCa3etWy5PvuhjhzzJX9rOClDWdP0KZAzk6l3Y4nUlLAbaB3KuKvlCO7Deu8qecVmJ4voO6pmEsizneGRg1yyKwZBAzKW9yrzbI6ZAU6jUZBc0Yo6zUqFtCAZD"
 if fb_access_token == None:
     fb_access_token = raw_input("\nCopy and paste token from https://developers.facebook.com/tools/explorer\n>  ")
 
@@ -88,7 +88,7 @@ print ('----------------------------------------3')
 
 #InstagramAPI
 
-insta_access_token = "xxxxxx"
+insta_access_token = "213962356.1677ed0.4c721dc52c6946458137aeb2bec48b57"
 
 CACHE_FNAME = "insta.json" 
 try:

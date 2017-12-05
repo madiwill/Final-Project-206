@@ -7,31 +7,36 @@ import random
 import requests
 import facebook
 import sqlite3
+import pprint
+import plotly
+import plotly.plotly as py
+from plotly.graph_objs import *
+from datetime import datetime 
 
 #FacebookAPI
 
-# def __init__(self):
-#         self.fb_url = 'https://developers.facebook.com/tools/debug/og/object'
+def __init__(self):
+        self.fb_url = 'https://developers.facebook.com/tools/debug/og/object'
 
-# def pretty(obj):
-#     return json.dumps(obj, sort_keys=True, indent=2)
+def pretty(obj):
+    return json.dumps(obj, sort_keys=True, indent=2)
 
-# class Post():
-#     def __init__(self, post_dict={}):
-#     	if 'message' in post_dict:
-#     		self.message = post_dict['message']
-#     	else:
-#     		self.message = ""
-#     	if 'comments' in post_dict:
-#     		self.comments = post_dict['comments']['data']
-#     	else:
-#     		self.comments = []
-#     	if 'likes' in post_dict:
-#     		self.likes = post_dict['likes']['data']
-#     	else:
-#     		self.likes = []
+class Post():
+    def __init__(self, post_dict={}):
+    	if 'message' in post_dict:
+    		self.message = post_dict['message']
+    	else:
+    		self.message = ""
+    	if 'comments' in post_dict:
+    		self.comments = post_dict['comments']['data']
+    	else:
+    		self.comments = []
+    	if 'likes' in post_dict:
+    		self.likes = post_dict['likes']['data']
+    	else:
+    		self.likes = []
 
-fb_access_token = "EAACEdEose0cBANz89meS1OgSMp3B7CmF6ZBjNdodpZB8Dv5YTR4O0ZCMJaScfZBp4XDAr1qdxgdnZCa3etWy5PvuhjhzzJX9rOClDWdP0KZAzk6l3Y4nUlLAbaB3KuKvlCO7Deu8qecVmJ4voO6pmEsizneGRg1yyKwZBAzKW9yrzbI6ZAU6jUZBc0Yo6zUqFtCAZD"
+fb_access_token = "EAACEdEose0cBAPPZAKLlSVR8li69IHGF6iY6dIIYhIGqItaOKZAFBNZAktagjf3GPaIG2zqbkKJexLIo5ZCsSoLH9Tn8LOJmovlji2XBV3o1ozElW36FrIgWlaOGOqiD2vwUmJPEd3UBQGfoRWdjJgaJbpVx8ZBzInuxZCvznqs1ZAEnj4zVBn0NiZCQ5IhCztwZD"
 if fb_access_token == None:
     fb_access_token = raw_input("\nCopy and paste token from https://developers.facebook.com/tools/explorer\n>  ")
 
@@ -69,7 +74,7 @@ except:
 print ('----------------------------------------2')
 
 def get_user_fbposts(username):
-    fbparams={"access_token":fb_access_token}
+    fbparams={"access_token":fb_access_token, "limit": 100}
     baseurl= "https://graph.facebook.com/v2.3/me/feed"
     if username in CACHE_DICTION:
         print ('using cached data')
@@ -83,6 +88,30 @@ def get_user_fbposts(username):
         f.close()
     return fb_results
 facebook_post = get_user_fbposts("Madi Willihnganz")
+fb = json.loads(facebook_post)
+
+print ('----------------------------------------3')
+
+#create facebook data table
+conn= sqlite3.connect('Facebook_206_Final_Project.sqlite')
+cur = conn.cursor()
+cur.execute('DROP TABLE IF EXISTS Facebook_Data')
+cur.execute('CREATE TABLE Facebook_Data (post VARCHAR, time DATETIME)')
+
+fb_data = fb['data']
+for post in fb_data:
+    if 'message' in post:
+        remove_timezone1 = post['created_time'][:-5]
+        time = datetime.strptime(remove_timezone1, '%Y-%m-%dT%H:%M:%S')
+        tup = post['message'], time
+        cur.execute('INSERT OR IGNORE INTO Facebook_Data (post, time) VALUES (?, ?)', tup)
+    if 'story' in post:
+        remove_timezone = post['created_time'][:-5]
+        time = datetime.strptime(remove_timezone, '%Y-%m-%dT%H:%M:%S')
+        tup = post['story'], time
+        cur.execute('INSERT OR IGNORE INTO Facebook_Data (post, time) VALUES (?, ?)', tup)
+
+conn.commit()
 
 print ('----------------------------------------3')
 
@@ -118,6 +147,33 @@ def get_user_instaposts(username):
     return insta_results
 
 insta_post = get_user_instaposts("madiwilly10")
+insta = json.loads(str(insta_post))
 
+
+#create instagram data table
+
+conn= sqlite3.connect('Insta_206_Final_Project.sqlite')
+cur = conn.cursor()
+cur.execute('DROP TABLE IF EXISTS Instagram_Data')
+cur.execute('CREATE TABLE Instagram_Data (post VARCHAR, time DATETIME)')
+import datetime
+
+insta_data = insta['data']
+for post in insta_data:
+    if 'user' in post:
+        date = (datetime.datetime.fromtimestamp(int(post['created_time'])).strftime('%Y-%m-%d %H:%M:%S'))
+        tup = post['user']['full_name'], date
+        cur.execute('INSERT OR IGNORE INTO Instagram_Data (post, time) VALUES (?, ?)', tup)
+
+conn.commit()
+
+#create plotly graph
+plotly.tools.set_credentials_file(username='madiwill', api_key='BL58oUvyXtX2LWrL7Rv5')
+plotly.tools.set_config_file(world_readable=True)
+trace0 = Bar(x=[1, 2, 3, 4], y=[10, 15, 13, 17])
+trace1 = Scatter(x=[1, 2, 3, 4], y=[16, 5, 11, 9])
+data = Data([trace0, trace1])
+
+py.plot(data, filename = 'basic-line')
 
 print ('----------------------------------------5')
